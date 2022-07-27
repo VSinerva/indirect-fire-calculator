@@ -17,7 +17,7 @@ class CalculatorUI:
         clear()
 
     def _close(self):
-        print("Shutting down...")
+        print("Suljetaan...")
         exit()
 
     def _get_starting_values(self):
@@ -26,23 +26,24 @@ class CalculatorUI:
         while action_str != "" or not (calc.coords_set("mortar") and calc.coords_set("target")):
             clear()
             self._print_coordinates()
-            action_str = input("Enter coordinates to fill next position.\n'M', 'T' or 'O' to change specific value.\n'Enter' to continue. 'E' to Exit: ")
+            action_str = input("Lisää seuraavat koordinaatit ja paina 'Enter'.\nPaina 'H', 'K' or 'O' tiettyjen arvojen päivittämiseksi.\nPaina 'Enter' jatkaaksesi. Paina 'S' sulkeaksesi ohjelma: ")
 
-            if action_str.upper() == "E":
+            if action_str.upper() == "S":
                 self._close()
 
             pos_name = None
-            if action_str.upper() == "M":
-                pos_name = "mortar"
-            elif action_str.upper() == "T":
-                pos_name = "target"
-            elif action_str.upper() == "O":
-                pos_name = "observer"
+            if action_str:
+                if action_str[0].upper() == "H":
+                    pos_name = "mortar"
+                elif action_str[0].upper() == "K":
+                    pos_name = "target"
+                elif action_str[0].upper() == "T":
+                    pos_name = "observer"
 
             if pos_name:
                 while True:
                     try:
-                        calc.set_coords(input(f"Set {pos_name} coordinates: "), pos_name)
+                        calc.set_coords(input("Aseta koordinaatit: "), pos_name)
                         break
                     except ValueError:
                         continue
@@ -59,22 +60,22 @@ class CalculatorUI:
 
     def _print_coordinates(self):
         print()
-        confirm_str = "DATA ENTERED"
+        confirm_str = "KOORDINAATIT"
         print(confirm_str)
         print("-"*len(confirm_str))
-        print(f"Mortar:\t\t{calc.get_coords('mortar')[0]:05d} {calc.get_coords('mortar')[1]:05d}")
-        print(f"Target:\t\t{calc.get_coords('target')[0]:05d} {calc.get_coords('target')[1]:05d}")
-        print(f"Observer:\t{calc.get_coords('observer')[0]:05d} {calc.get_coords('observer')[1]:05d}")
+        print(f"Heitin:\t\t{calc.get_coords('mortar')[0]:05d} {calc.get_coords('mortar')[1]:05d}")
+        print(f"Kohde:\t\t{calc.get_coords('target')[0]:05d} {calc.get_coords('target')[1]:05d}")
+        print(f"Tulenjohtaja:\t{calc.get_coords('observer')[0]:05d} {calc.get_coords('observer')[1]:05d}")
         print()
 
 
     def _print_firing_values(self):
         print()
-        solution_str = "FIRING DATA"
+        solution_str = "HEITTIMEN ARVOT"
         print(solution_str)
         print("-"*len(solution_str))
-        print(f"Dist: {calc.get_dist_to_target():.0f}m")
-        print(f"Az: {calc.get_az_to_target():.0f}")
+        print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
+        print(f"Suuntima: {calc.get_az_to_target():.0f}")
         print()
 
     def _update_firing_values(self):
@@ -84,18 +85,18 @@ class CalculatorUI:
             self._print_firing_values()
 
             if calc.coords_set("observer"):
-                print("Give updates string as \"X(V/O) and/or Y(J/L)\".")
-                print("Set new observer position with 'T' followed by coordinates.")
+                print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
+                print("Päivitä tulenjohtajan sijainti syöttämällä 'T' ja uudet koordinaatit.")
             else:
-                print("Set observer position with 'T' followed by coordinates.")
+                print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
 
-            action_str = input("Set new target with 'K' followed by coordinates.\nReset with 'R'. Exit with 'E': ")
+            action_str = input("Päivitä kohde syöttämällä 'K' ja uudet koordinaatit.\nPaina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
             if not action_str:
                 continue
 
-            if action_str.upper() == "E":
+            if action_str.upper() == "S":
                 self._close()
-            if action_str.upper() == "R":
+            if action_str.upper() == "N":
                 return
             if action_str[0].upper() == "T":
                 try:

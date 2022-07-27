@@ -18,12 +18,12 @@ class CalculatorService:
 
     def set_coords(self, coordinate_string: str, pos_name: str):
         if pos_name not in self._coords:
-            raise ValueError
+            raise ValueError("Invalid position name!")
         try:
             self._coords[pos_name] = self._str_to_coords(coordinate_string)
             self._coords_set[pos_name] = True
-        except ValueError:
-            raise ValueError
+        except ValueError as e:
+            raise e
 
     def get_coords(self, pos_name: str):
         return self._coords[pos_name]
@@ -61,9 +61,10 @@ class CalculatorService:
 
                     if 0 <= easting < self._max_coordinate and 0<= northing < self._max_coordinate:
                         return (easting, northing)
-            raise ValueError
-        except ValueError:
-            raise ValueError
+                    raise ValueError("Invalid coordinates!")
+            raise ValueError("Empty string passed as coordinates!")
+        except ValueError as e:
+            raise e 
 
     def _distance_between(self, coords1, coords2):
         e_dist = coords1[0] - coords2[0]

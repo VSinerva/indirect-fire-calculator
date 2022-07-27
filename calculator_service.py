@@ -37,8 +37,54 @@ class CalculatorService:
     def get_az_to_target(self):
         return self._azimuth(self._coords["mortar"], self._coords["target"])
 
+    def update_target(self, update_string: str):
+        if not self.coords_set("observer"):
+            raise ValueError("No observer pos set!")
+
+        substrings = update_string.strip().split(" ")
+        if not (0 < len(substrings) < 3):
+            raise ValueError("Invalid update string!")
+
+        sideways_str = None
+        lengthways_str = None
+
+        for substring in substrings:
+            c = substring[-1].upper()
+            if c == "O":
+                sideways_str = substring[0:-1]
+            elif c == "V":
+                sideways_str = "-" + substring[0:-1]
+            elif c == "J":
+                lengthways_str = substring[0:-1]
+            elif c == "L":
+                lengthways_str = "-" + substring[0:-1]
+            else:
+                raise ValueError("Invalid update string!")
+
+        try:
+            side_correction = int(sideways_str)
+        except:
+            side_correction = 0
+
+        try:
+            length_correction = int(lengthways_str)
+        except:
+            length_correction = 0
+
+        observer_e, observer_n = self.get_coords("observer")
+        target_e, target_n = self.get_coords("target")
+        dist = self._distance_between(self.get_coords("observer"), self.get_coords("target"))
+        observer_forward_vec =((target_e-observer_e)/dist, (target_n-observer_n)/dist)
+        observer_right_vec =(observer_forward_vec[1], -observer_forward_vec[0])
+
+        target_e += side_correction*observer_right_vec[0] + length_correction*observer_forward_vec[0]
+        target_n += side_correction*observer_right_vec[1] + length_correction*observer_forward_vec[1]
+
+        self._coords["target"] = (round(target_e), round(target_n))
+
     def _str_to_coords(self, string: str):
         try:
+            string = string.strip()
             if len(string) > 0:
                 substrings = string.split(" ")
                 if len(substrings) == 2:

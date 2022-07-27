@@ -132,7 +132,10 @@ class Calculator:
                 pass
 
     def firing_values(self):
-        clear()
+        print()
+        solution_str = "FIRING DATA"
+        print(solution_str)
+        print("-"*len(solution_str))
         print(f"Dist: {self._distance_between(self._firing_position_coords, self._target_coords):.0f}m")
         print(f"Az: {self._azimuth(self._firing_position_coords, self._target_coords)}")
         print()

@@ -47,15 +47,18 @@ class CalculatorUI:
     def _update_firing_values(self):
         while True:
             clear()
-            self._print_coordinates()
-            self._print_firing_values()
-
             print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
             print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
             print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
             if calc.coords_set("observer"):
                 print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
-            action_str = input("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
+            print("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi.")
+
+            self._print_coordinates()
+            self._print_firing_values()
+
+            action_str = input("Syöte: ")
+
             if not action_str:
                 continue
 

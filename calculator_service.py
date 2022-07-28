@@ -3,7 +3,7 @@ from math import sqrt, atan2, pi
 class CalculatorService:
     def __init__(self):
         self._max_coordinate = 10**5
-        self._circle_divisions = 6200 
+        self._circle_divisions = 6400 
         self._coords = {}
         self._coords_set = {}
         self.zero_values()

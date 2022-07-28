@@ -90,7 +90,7 @@ class CalculatorUI:
             else:
                 print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
 
-            action_str = input("Päivitä kohde syöttämällä 'K' ja uudet koordinaatit.\nPaina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
+            action_str = input("Päivitä heittimen sijainti syöttämällä 'H' ja uudet koordinaatit.\nPäivitä kohde syöttämällä 'K' ja uudet koordinaatit.\nPaina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
             if not action_str:
                 continue
 
@@ -98,14 +98,18 @@ class CalculatorUI:
                 self._close()
             if action_str.upper() == "N":
                 return
-            if action_str[0].upper() == "T":
-                try:
-                    calc.set_coords(action_str[1:], "observer")
-                except ValueError:
-                    pass
+
+            pos_name = None
+            if action_str[0].upper() == "H":
+                pos_name = "mortar"
             if action_str[0].upper() == "K":
+                pos_name = "target"
+            if action_str[0].upper() == "T":
+                pos_name = "observer"
+
+            if pos_name:
                 try:
-                    calc.set_coords(action_str[1:], "target")
+                    calc.set_coords(action_str[1:], pos_name)
                 except ValueError:
                     pass
 

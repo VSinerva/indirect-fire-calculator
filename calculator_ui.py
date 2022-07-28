@@ -37,8 +37,9 @@ class CalculatorUI:
         print(solution_str)
         print("-"*len(solution_str))
         if calc.coords_set("mortar") and calc.coords_set("target"):
+            az = round(calc.get_az_to_target())
+            print(f"Sivu: {az//100:02d}-{az%100:02d}")
             print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
-            print(f"Suuntima: {calc.get_az_to_target():.0f}")
         else:
             print(f"Etäisyys: ---")
             print(f"Suuntima: ---")

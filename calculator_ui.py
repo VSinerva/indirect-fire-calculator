@@ -26,7 +26,7 @@ class CalculatorUI:
         while action_str != "" or not (calc.coords_set("mortar") and calc.coords_set("target")):
             clear()
             self._print_coordinates()
-            action_str = input("Lisää seuraavat koordinaatit ja paina 'Enter'.\nPaina 'H', 'K' or 'O' tiettyjen arvojen päivittämiseksi.\nPaina 'Enter' jatkaaksesi. Paina 'S' sulkeaksesi ohjelma: ")
+            action_str = input("Lisää seuraavat koordinaatit ja paina 'Enter'.\nPaina 'H', 'K' or 'T' tiettyjen arvojen päivittämiseksi.\nPaina 'Enter' jatkaaksesi. Paina 'S' sulkeaksesi ohjelma: ")
 
             if action_str.upper() == "S":
                 self._close()

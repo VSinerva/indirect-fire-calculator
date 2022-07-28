@@ -51,7 +51,7 @@ class CalculatorUI:
             self._print_firing_values()
 
             print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
-            print("Aseta kohde syöttämällä 'K' ja koordinaatit.")
+            print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
             print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
             if calc.coords_set("observer"):
                 print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
@@ -64,6 +64,13 @@ class CalculatorUI:
             if action_str.upper() == "N":
                 clear()
                 calc.zero_values()
+
+            try:
+                int(action_str[0])
+                action_str = "K" + action_str
+            except ValueError:
+                pass
+
 
             pos_name = None
             if action_str[0].upper() == "H":

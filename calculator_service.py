@@ -1,12 +1,25 @@
 from math import sqrt, atan2, pi
+import csv
 
 class CalculatorService:
     def __init__(self):
         self._max_coordinate = 10**5
         self._circle_divisions = 6400 
+
         self._coords = {}
         self._coords_set = {}
         self.zero_values()
+
+        self._range_table = {}
+        self._range_table_name = ""
+        self._range_table_set = False
+
+    @property
+    def range_table_name(self):
+        return self._range_table_name
+    @property
+    def range_table_set(self):
+        return self._range_table_set
 
     def zero_values(self):
         self._coords["mortar"] = (0, 0)
@@ -15,6 +28,26 @@ class CalculatorService:
         self._coords_set["mortar"] =  False
         self._coords_set["target"] = False
         self._coords_set["observer"] = False
+
+    def set_range_table(self, range_table_path: str):
+        try:
+            with open(range_table_path, "r") as file:
+                csv_reader = csv.DictReader(file)
+                for line in csv_reader:
+                    charge = int(line["charge"])
+                    dist = int(line["dist"])
+                    elev = int(line["elev"])
+                    time_of_flight = float(line["tof"].replace(",", "."))
+                    if charge not in self._range_table:
+                        self._range_table[charge] = []
+                    self._range_table[charge].append((dist, elev, time_of_flight))
+        except Exception as e:
+            self._range_table = []
+            self._range_table_name = ""
+            self._range_table_set = False
+            raise e
+        self._range_table_set = True
+        self._range_table_name = range_table_path[0:-4].upper()
 
     def set_coords(self, coordinate_string: str, pos_name: str):
         if pos_name not in self._coords:
@@ -31,11 +64,39 @@ class CalculatorService:
     def coords_set(self, pos_name: str):
         return self._coords_set[pos_name]
 
+    def get_az_to_target(self):
+        return self._azimuth(self._coords["mortar"], self._coords["target"])
+
     def get_dist_to_target(self):
         return self._distance_between(self._coords["mortar"], self._coords["target"])
 
-    def get_az_to_target(self):
-        return self._azimuth(self._coords["mortar"], self._coords["target"])
+    def get_elev_to_target(self):
+        dist = self.get_dist_to_target()
+
+        possible_values = []
+
+        for charge, table in self._range_table.items():
+            if table[0][0] > dist or table[-1][0] < dist:
+                continue
+
+            lower = 0
+            while table[lower+1][0] <= dist:
+                lower += 1
+            upper = len(table)-1
+            while table[upper-1][0] > dist:
+                upper -= 1
+            
+            l_dist, l_elev, l_tof = table[lower]
+            u_dist, u_elev, u_tof = table[upper]
+            elev = l_elev + (dist-l_dist) * (u_elev-l_elev) / (u_dist-l_dist)
+            tof = l_tof + (dist-l_dist) * (u_tof-l_tof) / (u_dist-l_dist)
+            possible_values.append((tof, charge, elev))
+
+        if len(possible_values) == 0:
+            raise ValueError
+
+        tof, charge, elev = min(possible_values)
+        return (charge, elev, tof)
 
     def update_target(self, update_string: str):
         if not self.coords_set("observer"):

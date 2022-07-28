@@ -34,15 +34,34 @@ class CalculatorUI:
     def _print_firing_values(self):
         print()
         solution_str = "HEITTIMEN ARVOT"
+        if calc.range_table_set:
+            solution_str = solution_str + " " + calc.range_table_name
         print(solution_str)
         print("-"*len(solution_str))
         if calc.coords_set("mortar") and calc.coords_set("target"):
             az = round(calc.get_az_to_target())
-            print(f"Sivu: {az//100:02d}-{az%100:02d}")
-            print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
+
+            if calc.range_table_set:
+                try:
+                    charge, elev, tof = calc.get_elev_to_target()
+                    print(f"Panos: {charge}")
+                    print(f"Sivu: {az//100:02d}-{az%100:02d}")
+                    print(f"Koro: {elev:.0f}")
+                    print(f"Lentoaika: {tof:.1f}s")
+                except ValueError:
+                    print("ETÄISYYS EI MAHDOLLINEN!")
+            else:
+                print(f"Sivu: {az//100:02d}-{az%100:02d}")
+                print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
         else:
-            print(f"Etäisyys: ---")
-            print(f"Suuntima: ---")
+            if calc.range_table_set:
+                print(f"Panos: ---")
+                print(f"Sivu: ---")
+                print(f"Koro: ---")
+                print(f"Lentoaika: ---")
+            else:
+                print(f"Sivu: ---")
+                print(f"Etäisyys: ---")
         print()
 
     def _update_firing_values(self):
@@ -95,7 +114,22 @@ class CalculatorUI:
             except ValueError:
                 pass
 
+    def get_range_table(self):
+        while True:
+            range_table_path = input("Taulukon tiedostonimi (valinnainen): ")
+            if range_table_path:
+                calc.set_range_table(range_table_path)
+                try:
+                    calc.set_range_table(range_table_path)
+                    break
+                except:
+                    print("Väärä tiedostonimi TAI virheellinen taulukko!")
+                    continue
+            else:
+                break
+
     def run(self):
+        self.get_range_table()
         while True:
             try:
                 self._update_firing_values()

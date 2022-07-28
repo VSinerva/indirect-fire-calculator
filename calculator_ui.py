@@ -89,11 +89,13 @@ class CalculatorUI:
                 calc.zero_values()
 
             try:
-                int(action_str[0])
-                action_str = "K" + action_str
+                calc.update_target(action_str)
             except ValueError:
-                pass
-
+                try:
+                    int(action_str[0])
+                    action_str = "K" + action_str
+                except ValueError:
+                    pass
 
             pos_name = None
             if action_str[0].upper() == "H":
@@ -108,11 +110,6 @@ class CalculatorUI:
                     calc.set_coords(action_str[1:], pos_name)
                 except ValueError:
                     pass
-
-            try:
-                calc.update_target(action_str)
-            except ValueError:
-                pass
 
     def get_range_table(self):
         while True:

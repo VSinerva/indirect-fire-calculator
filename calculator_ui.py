@@ -20,44 +20,6 @@ class CalculatorUI:
         print("Suljetaan...")
         exit()
 
-    def _get_starting_values(self):
-        calc.zero_values()
-        action_str = "_"
-        while action_str != "" or not (calc.coords_set("mortar") and calc.coords_set("target")):
-            clear()
-            self._print_coordinates()
-            action_str = input("Lisää seuraavat koordinaatit ja paina 'Enter'.\nPaina 'H', 'K' or 'T' tiettyjen arvojen päivittämiseksi.\nPaina 'Enter' jatkaaksesi. Paina 'S' sulkeaksesi ohjelma: ")
-
-            if action_str.upper() == "S":
-                self._close()
-
-            pos_name = None
-            if action_str:
-                if action_str[0].upper() == "H":
-                    pos_name = "mortar"
-                elif action_str[0].upper() == "K":
-                    pos_name = "target"
-                elif action_str[0].upper() == "T":
-                    pos_name = "observer"
-
-            if pos_name:
-                while True:
-                    try:
-                        calc.set_coords(input("Aseta koordinaatit: "), pos_name)
-                        break
-                    except ValueError:
-                        continue
-            else:
-                for pos in ["mortar", "target", "observer"]:
-                    if not calc.coords_set(pos):
-                        try:
-                            calc.set_coords(action_str, pos)
-                            if pos == "observer":
-                                return
-                        except ValueError:
-                            pass
-                        break
-
     def _print_coordinates(self):
         print()
         confirm_str = "KOORDINAATIT"
@@ -74,8 +36,12 @@ class CalculatorUI:
         solution_str = "HEITTIMEN ARVOT"
         print(solution_str)
         print("-"*len(solution_str))
-        print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
-        print(f"Suuntima: {calc.get_az_to_target():.1f}")
+        if calc.coords_set("mortar") and calc.coords_set("target"):
+            print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
+            print(f"Suuntima: {calc.get_az_to_target():.0f}")
+        else:
+            print(f"Etäisyys: ---")
+            print(f"Suuntima: ---")
         print()
 
     def _update_firing_values(self):
@@ -84,20 +50,20 @@ class CalculatorUI:
             self._print_coordinates()
             self._print_firing_values()
 
+            print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
+            print("Aseta kohde syöttämällä 'K' ja koordinaatit.")
+            print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
             if calc.coords_set("observer"):
                 print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
-                print("Päivitä tulenjohtajan sijainti syöttämällä 'T' ja uudet koordinaatit.")
-            else:
-                print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
-
-            action_str = input("Päivitä heittimen sijainti syöttämällä 'H' ja uudet koordinaatit.\nPäivitä kohde syöttämällä 'K' ja uudet koordinaatit.\nPaina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
+            action_str = input("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi: ")
             if not action_str:
                 continue
 
             if action_str.upper() == "S":
                 self._close()
             if action_str.upper() == "N":
-                return
+                clear()
+                calc.zero_values()
 
             pos_name = None
             if action_str[0].upper() == "H":
@@ -120,7 +86,6 @@ class CalculatorUI:
 
     def run(self):
         while True:
-            self._get_starting_values()
             try:
                 self._update_firing_values()
             except ValueError:

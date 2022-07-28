@@ -75,7 +75,7 @@ class CalculatorUI:
         print(solution_str)
         print("-"*len(solution_str))
         print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
-        print(f"Suuntima: {calc.get_az_to_target():.0f}")
+        print(f"Suuntima: {calc.get_az_to_target():.1f}")
         print()
 
     def _update_firing_values(self):

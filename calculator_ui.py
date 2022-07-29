@@ -118,8 +118,8 @@ class CalculatorUI:
             if action_str[0].upper() == "K":
                 pos_name = "target"
             if action_str[0].upper() == "T":
-                action_str = action_str[1:]
-                if action_str[0].upper() == "A":
+                if action_str[1].upper() == "A":
+                    action_str = action_str[1:]
                     try:
                         string = action_str[1:].strip()
                         az_str, dist_str = string.split(" ")

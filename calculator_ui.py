@@ -101,6 +101,17 @@ class CalculatorUI:
                 except ValueError:
                     pass
 
+            if action_str[0].upper() == "A":
+                try:
+                    string = action_str[1:].strip()
+                    az_str, dist_str = string.split(" ")
+                    az = int(az_str)
+                    dist = int(dist_str)
+                    calc.set_target_az_dist("mortar", az, dist)
+                except ValueError:
+                    pass
+
+
             pos_name = None
             if action_str[0].upper() == "H":
                 pos_name = "mortar"
@@ -125,17 +136,6 @@ class CalculatorUI:
                     calc.set_coords(action_str[1:], pos_name)
                 except ValueError:
                     pass
-
-            if action_str[0].upper() == "A":
-                try:
-                    string = action_str[1:].strip()
-                    az_str, dist_str = string.split(" ")
-                    az = int(az_str)
-                    dist = int(dist_str)
-                    calc.set_target_az_dist("mortar", az, dist)
-                except ValueError:
-                    pass
-
 
     def get_range_table(self):
         while True:

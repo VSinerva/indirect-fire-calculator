@@ -48,6 +48,7 @@ class CalculatorUI:
                     print(f"Sivu: {az//100:02d}-{az%100:02d}")
                     print(f"Koro: {elev:.0f}")
                     print(f"Lentoaika: {tof:.1f}s")
+                    print(f"Etäisyys: {calc.get_dist_to_target():.0f}m")
                 except ValueError:
                     print("ETÄISYYS EI MAHDOLLINEN!")
             else:
@@ -59,6 +60,7 @@ class CalculatorUI:
                 print(f"Sivu: ---")
                 print(f"Koro: ---")
                 print(f"Lentoaika: ---")
+                print(f"Etäisyys: ---")
             else:
                 print(f"Sivu: ---")
                 print(f"Etäisyys: ---")
@@ -69,6 +71,8 @@ class CalculatorUI:
             clear()
             print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
             print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
+            print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä heittimestä 'AXXX YYY'.")
+            print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä tulenjohtajasta 'TAXXX YYY'.")
             print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
             if calc.coords_set("observer"):
                 print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
@@ -103,13 +107,35 @@ class CalculatorUI:
             if action_str[0].upper() == "K":
                 pos_name = "target"
             if action_str[0].upper() == "T":
-                pos_name = "observer"
+                action_str = action_str[1:]
+                if action_str[0].upper() == "A":
+                    try:
+                        string = action_str[1:].strip()
+                        az_str, dist_str = string.split(" ")
+                        az = int(az_str)
+                        dist = int(dist_str)
+                        calc.set_target_az_dist("observer", az, dist)
+                    except ValueError:
+                        pass
+                else:
+                    pos_name = "observer"
 
             if pos_name:
                 try:
                     calc.set_coords(action_str[1:], pos_name)
                 except ValueError:
                     pass
+
+            if action_str[0].upper() == "A":
+                try:
+                    string = action_str[1:].strip()
+                    az_str, dist_str = string.split(" ")
+                    az = int(az_str)
+                    dist = int(dist_str)
+                    calc.set_target_az_dist("mortar", az, dist)
+                except ValueError:
+                    pass
+
 
     def get_range_table(self):
         while True:

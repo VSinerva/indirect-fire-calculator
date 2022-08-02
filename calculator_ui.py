@@ -75,7 +75,7 @@ class CalculatorUI:
             print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä tulenjohtajasta 'TAXXX YYY'.")
             print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
             if calc.coords_set("observer"):
-                print("Anna korjaukset muodossa \"X(V/O) ja/tai Y(J/L)\".")
+                print("Anna korjaukset muodossa \"(V/O)X ja/tai (J/L)Y\".")
             print("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi.")
 
             self._print_coordinates()

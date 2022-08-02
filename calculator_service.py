@@ -110,15 +110,15 @@ class CalculatorService:
         lengthways_str = None
 
         for substring in substrings:
-            c = substring[-1].upper()
+            c = substring[0].upper()
             if c == "O":
-                sideways_str = substring[0:-1]
+                sideways_str = substring[1:]
             elif c == "V":
-                sideways_str = "-" + substring[0:-1]
+                sideways_str = "-" + substring[1:]
             elif c == "J":
-                lengthways_str = substring[0:-1]
+                lengthways_str = substring[1:]
             elif c == "L":
-                lengthways_str = "-" + substring[0:-1]
+                lengthways_str = "-" + substring[1:]
             else:
                 raise ValueError("Invalid update string!")
 

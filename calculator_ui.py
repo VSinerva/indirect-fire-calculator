@@ -72,6 +72,7 @@ class CalculatorUI:
             clear()
             print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
             print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
+            print("Aseta kohde ja tulenjohtaja syöttämällä 'K' ja kohteen koordinaatit, ja suunta ja etäisyys tulenjohtajasta kohteeseen.")
             print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä heittimestä 'AXXX YYY'.")
             print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä tulenjohtajasta 'TAXXX YYY'.")
             print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
@@ -136,10 +137,18 @@ class CalculatorUI:
                     pos_name = "observer"
 
             if pos_name:
-                try:
-                    calc.set_coords(action_str[1:], pos_name)
-                except ValueError as e:
-                    errors = errors + str(e) + "\n"
+                if len(action_str[1:].strip().split(" ")) == 4 and pos_name == "target":
+                    try:
+                        substrings = action_str[1:].strip().split(" ")
+                        calc.set_coords(substrings[0]+" "+substrings[1], pos_name)
+                        calc.set_observer_az_dist("target", int(substrings[2]), int(substrings[3]))
+                    except ValueError as e:
+                        errors = errors + "Virheellinen syöte!\n"
+                else:
+                    try:
+                        calc.set_coords(action_str[1:], pos_name)
+                    except ValueError as e:
+                        errors = errors + str(e) + "\n"
 
     def get_range_table(self):
         while True:

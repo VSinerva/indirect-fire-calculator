@@ -154,6 +154,17 @@ class CalculatorService:
         self._coords["target"] = (round(easting), round(northing))
         self._coords_set["target"] = True
 
+    def set_observer_az_dist(self, ref_pos_name, az, dist):
+        if not self._coords_set[ref_pos_name]:
+            self.set_coords("5 5", ref_pos_name)
+        vec_e = -sin(2*pi * az/360) * dist
+        vec_n = -cos(2*pi * az/360) * dist
+        easting, northing = self._coords[ref_pos_name]
+        easting += vec_e
+        northing += vec_n
+        self._coords["observer"] = (round(easting), round(northing))
+        self._coords_set["observer"] = True
+
     def _str_to_coords(self, string: str):
         try:
             string = string.strip()

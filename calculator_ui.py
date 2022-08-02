@@ -131,7 +131,7 @@ class CalculatorUI:
                         dist = int(dist_str)
                         calc.set_target_az_dist("observer", az, dist)
                     except ValueError as e:
-                        errors = errors + str(e) + "\n"
+                        errors = errors + "Virheellinen syöte!\n"
                 else:
                     pos_name = "observer"
 

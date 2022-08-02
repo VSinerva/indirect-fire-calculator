@@ -164,11 +164,14 @@ class CalculatorService:
                     for substring in substrings:
                         coord = 0
                         counter = self._max_coordinate
-                        for c in substring:
-                            if counter > 1:
-                                counter = counter // 10
-                                coord *= 10
-                                coord += int(c)
+                        try:
+                            for c in substring:
+                                if counter > 1:
+                                    counter = counter // 10
+                                    coord *= 10
+                                    coord += int(c)
+                        except ValueError:
+                            raise ValueError("Virheellinen merkki koordinaateissa!")
                         while counter > 1:
                             counter = counter // 10
                             coord*= 10
@@ -179,8 +182,8 @@ class CalculatorService:
 
                     if 0 <= easting < self._max_coordinate and 0<= northing < self._max_coordinate:
                         return (easting, northing)
-                    raise ValueError("Virheelliset koordinaatit!")
-            raise ValueError("Tyhjät koordinaatit!!")
+                raise ValueError("Virheelliset koordinaatit!")
+            raise ValueError("Tyhjät koordinaatit!")
         except ValueError as e:
             raise e 
 

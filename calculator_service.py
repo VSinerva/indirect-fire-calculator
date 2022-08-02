@@ -100,11 +100,11 @@ class CalculatorService:
 
     def update_target(self, update_string: str):
         if not self.coords_set("observer"):
-            raise ValueError("No observer pos set!")
+            raise ValueError("Virheellinen korjaus!")
 
         substrings = update_string.strip().split(" ")
         if not (0 < len(substrings) < 3):
-            raise ValueError("Invalid update string!")
+            raise ValueError("Virheellinen korjaus!")
 
         sideways_str = None
         lengthways_str = None
@@ -120,7 +120,7 @@ class CalculatorService:
             elif c == "L":
                 lengthways_str = "-" + substring[1:]
             else:
-                raise ValueError("Invalid update string!")
+                raise ValueError("Virheellinen korjaus!")
 
         try:
             side_correction = int(sideways_str)
@@ -179,8 +179,8 @@ class CalculatorService:
 
                     if 0 <= easting < self._max_coordinate and 0<= northing < self._max_coordinate:
                         return (easting, northing)
-                    raise ValueError("Invalid coordinates!")
-            raise ValueError("Empty string passed as coordinates!")
+                    raise ValueError("Virheelliset koordinaatit!")
+            raise ValueError("Tyhjät koordinaatit!!")
         except ValueError as e:
             raise e 
 

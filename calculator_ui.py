@@ -67,6 +67,7 @@ class CalculatorUI:
         print()
 
     def _update_firing_values(self):
+        errors = ""
         while True:
             clear()
             print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
@@ -80,6 +81,9 @@ class CalculatorUI:
 
             self._print_coordinates()
             self._print_firing_values()
+
+            print(errors)
+            errors = ""
 
             action_str = input("Syöte: ")
 
@@ -108,8 +112,8 @@ class CalculatorUI:
                     az = int(az_str)
                     dist = int(dist_str)
                     calc.set_target_az_dist("mortar", az, dist)
-                except ValueError:
-                    pass
+                except ValueError as e:
+                    errors = errors + str(e) + "\n"
 
 
             pos_name = None
@@ -126,22 +130,21 @@ class CalculatorUI:
                         az = int(az_str)
                         dist = int(dist_str)
                         calc.set_target_az_dist("observer", az, dist)
-                    except ValueError:
-                        pass
+                    except ValueError as e:
+                        errors = errors + str(e) + "\n"
                 else:
                     pos_name = "observer"
 
             if pos_name:
                 try:
                     calc.set_coords(action_str[1:], pos_name)
-                except ValueError:
-                    pass
+                except ValueError as e:
+                    errors = errors + str(e) + "\n"
 
     def get_range_table(self):
         while True:
             range_table_path = input("Taulukon tiedostonimi (valinnainen): ")
             if range_table_path:
-                calc.set_range_table(range_table_path)
                 try:
                     calc.set_range_table(range_table_path)
                     break

@@ -2,23 +2,34 @@ from os import system, name
 
 from calculator_service import calculatorService as calc
 
-def clear():
-    # for windows
-    if name == 'nt':
-        _ = system('cls')
-
-    # for mac and linux
-    else:
-        _ = system('clear')
-
-
 class CalculatorUI:
     def __init__(self):
-        clear()
+        self.clear()
+
+    def clear(self):
+        # for windows
+        if name == "nt":
+            _ = system("cls")
+
+        # for mac and linux
+        else:
+            _ = system("clear")
+
 
     def _close(self):
         print("Suljetaan...")
         exit()
+
+    def _print_instructions(self):
+        print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
+        print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
+        print("Aseta kohde ja tulenjohtaja syöttämällä 'K' ja kohteen koordinaatit, ja suunta ja etäisyys tulenjohtajasta kohteeseen.")
+        print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä heittimestä 'AXXX YYY'.")
+        print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä tulenjohtajasta 'TAXXX YYY'.")
+        print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
+        if calc.coords_set("observer"):
+            print("Anna korjaukset muodossa \"(V/O)X ja/tai (J/L)Y\".")
+        print("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi.")
 
     def _print_coordinates(self):
         print()
@@ -29,7 +40,6 @@ class CalculatorUI:
         print(f"Kohde:\t\t{calc.get_coords('target')[0]:05d} {calc.get_coords('target')[1]:05d}")
         print(f"Tulenjohtaja:\t{calc.get_coords('observer')[0]:05d} {calc.get_coords('observer')[1]:05d}")
         print()
-
 
     def _print_firing_values(self):
         print()
@@ -69,17 +79,9 @@ class CalculatorUI:
     def _update_firing_values(self):
         errors = ""
         while True:
-            clear()
-            print("Aseta heittimen sijainti syöttämällä 'H' ja koordinaatit.")
-            print("Aseta kohde syöttämällä 'K' ja koordinaatit, tai pelkät koordinaatit.")
-            print("Aseta kohde ja tulenjohtaja syöttämällä 'K' ja kohteen koordinaatit, ja suunta ja etäisyys tulenjohtajasta kohteeseen.")
-            print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä heittimestä 'AXXX YYY'.")
-            print("Vaihtoehtoisesti aseta kohde kompassisuunnalla ja etäisyydellä tulenjohtajasta 'TAXXX YYY'.")
-            print("Aseta tulenjohtajan sijainti syöttämällä 'T' ja koordinaatit.")
-            if calc.coords_set("observer"):
-                print("Anna korjaukset muodossa \"(V/O)X ja/tai (J/L)Y\".")
-            print("Paina 'N' nollataksesi. Paina 'S' sulkeaksesi.")
+            self.clear()
 
+            self._print_instructions()
             self._print_coordinates()
             self._print_firing_values()
 
@@ -94,7 +96,7 @@ class CalculatorUI:
             if action_str.upper() == "S":
                 self._close()
             if action_str.upper() == "N":
-                clear()
+                self.clear()
                 calc.zero_values()
 
             try:
@@ -157,7 +159,7 @@ class CalculatorUI:
             try:
                 self._update_firing_values()
             except ValueError:
-                clear()
+                self.clear()
                 calc.zero_values()
 
 calculator = CalculatorUI()

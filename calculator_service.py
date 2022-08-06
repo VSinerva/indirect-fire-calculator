@@ -88,8 +88,11 @@ class CalculatorService:
             
             l_dist, l_elev, l_tof = table[lower]
             u_dist, u_elev, u_tof = table[upper]
+
+            #Interpolate between the two closest values in the range table
             elev = l_elev + (dist-l_dist) * (u_elev-l_elev) / (u_dist-l_dist)
             tof = l_tof + (dist-l_dist) * (u_tof-l_tof) / (u_dist-l_dist)
+
             possible_values.append((tof, charge, elev))
 
         if len(possible_values) == 0:
@@ -132,25 +135,31 @@ class CalculatorService:
         except:
             length_correction = 0
 
-        observer_e, observer_n = self.get_coords("observer")
-        target_e, target_n = self.get_coords("target")
+        observer = self.get_coords("observer")
+        target = self.get_coords("target")
+
         dist = self._distance_between(self.get_coords("observer"), self.get_coords("target"))
-        observer_forward_vec =((target_e-observer_e)/dist, (target_n-observer_n)/dist)
-        observer_right_vec =(observer_forward_vec[1], -observer_forward_vec[0])
 
-        target_e += side_correction*observer_right_vec[0] + length_correction*observer_forward_vec[0]
-        target_n += side_correction*observer_right_vec[1] + length_correction*observer_forward_vec[1]
+        #Find a vector of length 1m facing forward from the forward observer
+        observer_forward_vec = self._vec_mult(1/dist, self._vec_sub(target, observer))
 
-        self._coords["target"] = (round(target_e), round(target_n))
+        #Find a vector of the same length at a 90 degree angle to forward vec
+        observer_right_vec = (observer_forward_vec[1], -observer_forward_vec[0])
 
-    def set_pos_az_dist(self, ref_pos_name: str, new_pos_name: str, string: str):
+        side_correction_vec = self._vec_mult(side_correction, observer_right_vec)
+        length_correction_vec = self._vec_mult(length_correction, observer_forward_vec)
+        correction_vec = self._vec_add(side_correction_vec, length_correction_vec)
+
+        target = self._vec_add(target, correction_vec)
+
+        self._coords["target"] = (round(target[0]), round(target[1]))
+
+    def set_pos_az_dist(self, ref_pos_name: str, new_pos_name: str, string: str, invert=False):
         if string[0] != "T" and string[0] != "A":
             raise ValueError("Syöte ei ole suuntima-etäisyys-merkkijono!")
         try:
-            invert = False
             if string[0] == "T":
                 string = string[1:]
-                invert = True
 
             string = string[1:].strip()
             az_str, dist_str = string.split(" ")
@@ -160,6 +169,7 @@ class CalculatorService:
             if not self._coords_set[ref_pos_name]:
                 self.set_coords("5 5", ref_pos_name)
 
+            #Find easting and northing vector from azimuth
             vec_e = sin(2*pi * az/360) * dist
             vec_n = cos(2*pi * az/360) * dist
 
@@ -180,9 +190,18 @@ class CalculatorService:
         try:
             substrings = string[1:].strip().split(" ")
             self.set_coords(substrings[0]+" "+substrings[1], "target")
-            self.set_pos_az_dist("target", "observer", "TA "+substrings[2]+" "+substrings[3])
+            self.set_pos_az_dist("target", "observer", "A "+substrings[2]+" "+substrings[3], True)
         except ValueError as e:
             raise e
+
+    def _vec_sub(self, vec1, vec2):
+        return (vec1[0]-vec2[0], vec1[1]-vec2[1])
+
+    def _vec_add(self, vec1, vec2):
+        return (vec1[0]+vec2[0], vec1[1]+vec2[1])
+
+    def _vec_mult(self, mult, vec):
+        return (mult*vec[0], mult*vec[1])
 
     def _str_to_coords(self, string: str):
         try:
@@ -222,12 +241,9 @@ class CalculatorService:
         n_dist = coords1[1] - coords2[1]
         return sqrt(e_dist**2 + n_dist**2)
 
+    #Find azimuth from one point to another
     def _azimuth(self, coords1, coords2):
-        pos1e, pos1n = coords1
-        pos2e, pos2n = coords2
-
-        d_e = pos2e-pos1e
-        d_n = pos2n-pos1n
+        d_e, d_n = self._vec_sub(coords2, coords1)
 
         if d_e == 0:
             return 0 if d_n > 0 else self._circle_divisions / 2

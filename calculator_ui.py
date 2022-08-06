@@ -122,7 +122,7 @@ class CalculatorUI:
             if action_str[0].upper() == "T":
                 if action_str[1].upper() == "A":
                     try:
-                        calc.set_pos_az_dist("target", "observer", action_str)
+                        calc.set_pos_az_dist("observer", "target", action_str)
                     except ValueError as e:
                         errors = errors + str(e) + "\n"
                 else:

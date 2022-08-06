@@ -143,27 +143,46 @@ class CalculatorService:
 
         self._coords["target"] = (round(target_e), round(target_n))
 
-    def set_target_az_dist(self, ref_pos_name, az, dist):
-        if not self._coords_set[ref_pos_name]:
-            self.set_coords("5 5", ref_pos_name)
-        vec_e = sin(2*pi * az/360) * dist
-        vec_n = cos(2*pi * az/360) * dist
-        easting, northing = self._coords[ref_pos_name]
-        easting += vec_e
-        northing += vec_n
-        self._coords["target"] = (round(easting), round(northing))
-        self._coords_set["target"] = True
+    def set_pos_az_dist(self, ref_pos_name: str, new_pos_name: str, string: str):
+        if string[0] != "T" and string[0] != "A":
+            raise ValueError("Syöte ei ole suuntima-etäisyys-merkkijono!")
+        try:
+            invert = False
+            if string[0] == "T":
+                string = string[1:]
+                invert = True
 
-    def set_observer_az_dist(self, ref_pos_name, az, dist):
-        if not self._coords_set[ref_pos_name]:
-            self.set_coords("5 5", ref_pos_name)
-        vec_e = -sin(2*pi * az/360) * dist
-        vec_n = -cos(2*pi * az/360) * dist
-        easting, northing = self._coords[ref_pos_name]
-        easting += vec_e
-        northing += vec_n
-        self._coords["observer"] = (round(easting), round(northing))
-        self._coords_set["observer"] = True
+            string = string[1:].strip()
+            az_str, dist_str = string.split(" ")
+            az = int(az_str)
+            dist = int(dist_str)
+            
+            if not self._coords_set[ref_pos_name]:
+                self.set_coords("5 5", ref_pos_name)
+
+            vec_e = sin(2*pi * az/360) * dist
+            vec_n = cos(2*pi * az/360) * dist
+
+            if invert:
+                vec_e *= -1
+                vec_n *= -1
+
+            easting, northing = self._coords[ref_pos_name]
+            easting += vec_e
+            northing += vec_n
+            self._coords[new_pos_name] = (round(easting), round(northing))
+            self._coords_set[new_pos_name] = True
+
+        except ValueError as e:
+            errors = errors + str(e) + "\n"
+
+    def set_target_and_observer(self, string: str):
+        try:
+            substrings = string[1:].strip().split(" ")
+            self.set_coords(substrings[0]+" "+substrings[1], "target")
+            self.set_pos_az_dist("target", "observer", "TA "+substrings[2]+" "+substrings[3])
+        except ValueError as e:
+            raise e
 
     def _str_to_coords(self, string: str):
         try:

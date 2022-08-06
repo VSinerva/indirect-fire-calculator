@@ -108,14 +108,9 @@ class CalculatorUI:
 
             if action_str[0].upper() == "A":
                 try:
-                    string = action_str[1:].strip()
-                    az_str, dist_str = string.split(" ")
-                    az = int(az_str)
-                    dist = int(dist_str)
-                    calc.set_target_az_dist("mortar", az, dist)
+                    calc.set_pos_az_dist("mortar", "target", action_str)
                 except ValueError as e:
                     errors = errors + str(e) + "\n"
-
 
             pos_name = None
             if action_str[0].upper() == "H":
@@ -124,24 +119,17 @@ class CalculatorUI:
                 pos_name = "target"
             if action_str[0].upper() == "T":
                 if action_str[1].upper() == "A":
-                    action_str = action_str[1:]
                     try:
-                        string = action_str[1:].strip()
-                        az_str, dist_str = string.split(" ")
-                        az = int(az_str)
-                        dist = int(dist_str)
-                        calc.set_target_az_dist("observer", az, dist)
+                        calc.set_pos_az_dist("target", "observer", action_str)
                     except ValueError as e:
-                        errors = errors + "Virheellinen syöte!\n"
+                        errors = errors + str(e) + "\n"
                 else:
                     pos_name = "observer"
 
             if pos_name:
                 if len(action_str[1:].strip().split(" ")) == 4 and pos_name == "target":
                     try:
-                        substrings = action_str[1:].strip().split(" ")
-                        calc.set_coords(substrings[0]+" "+substrings[1], pos_name)
-                        calc.set_observer_az_dist("target", int(substrings[2]), int(substrings[3]))
+                        calc.set_target_and_observer(action_str)
                     except ValueError as e:
                         errors = errors + "Virheellinen syöte!\n"
                 else:
